@@ -6,7 +6,12 @@ const app =express();
 require("dotenv").config();
 const PORT = process.env.PORT||4000;
 app.use(express.json());
-app.use(fileupload());
+app.use(fileupload( 
+    {
+    useTempFiles:true,
+    tempFileDir:'/tmp/'
+    }
+));
 db.connect();
 cloudinary.cloudinaryconnect();
 const upload = require("./routes/FileUpload")
