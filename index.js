@@ -10,7 +10,7 @@ app.use(fileupload());
 db.connect();
 cloudinary.cloudinaryconnect();
 const upload = require("./routes/FileUpload")
-app.use('api/v1/upload',upload)
+app.use("/api/v1/upload",upload)
 app.listen(PORT,()=>{
     console.log(`listening port no. ${PORT}`)
 })
