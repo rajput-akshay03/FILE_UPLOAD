@@ -10,7 +10,7 @@ app.use(fileupload(
     {
     useTempFiles:true,
     tempFileDir:'/tmp/'
-    }
+    } 
 ));
 db.connect();
 cloudinary.cloudinaryconnect();
