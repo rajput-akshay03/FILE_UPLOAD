@@ -31,16 +31,23 @@ const cloudinary = require("cloudinary")
          {
               return supporttype.includes(filetype);
          }
-  async function cloudinaryupload(file,folder)
+  async function cloudinaryupload(file,folder,quality)
          {
                const options = {folder};
-              return await cloudinary.uploader.upload(file.tempFilePath,options);
+               options.resource_type = "auto";
+               if(quality)
+               {
+                    options.quality = quality;
+               }
+               console.log("resource type is", options.resource_type)
+               console.log("temp file path is",file.tempFilePath);
+              return await cloudinary.v2.uploader.upload(file.tempFilePath,options);
          } 
  exports.imgupload = async(req,res)=>{
           try{
                 const {name,tags,email} = req.body;
                 console.log(name,tags,email)
-                const file  = req.files.imagefile;
+                const file  = req.files.file;
                 console.log(file);
                 const supporttype = ["jpg","jpeg","png"];
                 const filetype = file.name.split('.')[1].toLowerCase();
@@ -55,7 +62,7 @@ const cloudinary = require("cloudinary")
                     )
                 }
              const response = await cloudinaryupload(file,"clouddb");
-             console.log(response)
+              console.log(response)
             //  const fileondb =
               await File.create(
                 {
@@ -83,4 +90,68 @@ const cloudinary = require("cloudinary")
                     }
                   )
           }
+ }
+ exports.vidupload=  async(req,res)=>{
+      try{
+             const {name,tags,email} = req.body;
+             const file = req.files.file;
+             console.log("file is",file,name,tags,email);
+         
+            const filetype = file.name.split('.')[1].toLowerCase();
+            // file.name.split('.')[1].toLowerCase();
+            console.log("filetype is" + filetype);
+            const supporttype = ["mp4","mp3"];
+            if(!isfilesupported(filetype,supporttype))
+            {   
+                return res.status(400).json(
+                    {
+                        success:false,
+                        message:"file is not supported"
+                    }
+                )
+            }
+              const response = await cloudinaryupload(file,"clouddb");
+              console.log(response)
+            res.json(
+                {
+                    success:true,
+                    message:"video uploaded successfully",
+                    videourl:response.secure_url,
+                }
+                )
+      }
+      catch(err)
+      {
+           console.log(err)
+           res.json({
+            message:"video not uploaded",
+            error:err
+           })
+      }
+ }
+ exports.imgredupload = async(req,res)=>{
+            const {name,email,tags} = req.body;
+            const file = req.files.file;
+            const filetype = file.name.split('.')[1].toLowerCase();
+            const supporttype = ["png","jpeg","mp4"];
+            if(!isfilesupported(filetype,supporttype))
+            {   
+                return res.status(400).json(
+                    {
+                        success:false,
+                        message:"file is not supported"
+                    }
+                )
+            }
+           
+            const response = await cloudinaryupload(file,"clouddb",40);
+            console.log(response)
+          res.json(
+              {
+                  success:true,
+                  message:"video uploaded successfully",
+                  videourl:response.secure_url,
+              }
+              )
+
  }
